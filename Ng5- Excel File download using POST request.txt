@@ -1,0 +1,57 @@
+Ng5- Excel File download using POST request:
+--------------------------------------------
+
+tempalte.html:
+-----------
+<div (click)="download(modell)" style="margin:50px;border: solid #000">download Excel File in Angualr 5 using POST Request.</div>
+  REf:https://stackoverflow.com/questions/49422518/angular-5-download-excel-file-with-post-request
+  
+component.ts:
+-------------
+passModel = { /* posting object */ }
+download(passModel) {
+  //this.loadingOverlayFlag = true;
+  this.graphService.DownloadData(passModel).subscribe(result=>{
+    // console.log(result);
+    this.downloadFile(result,'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'export.csv');
+  })
+}
+
+downloadFile(blob: any, type: string, filename: string) {
+
+  var binaryData = [];
+  binaryData.push(blob);
+
+  const url = window.URL.createObjectURL(new Blob(binaryData)); // <-- work with blob directly
+
+   // create hidden dom element (so it works in all browsers)
+   const a = document.createElement('a');
+   a.setAttribute('style', 'display:none;');
+   document.body.appendChild(a);
+
+   // create file, attach to hidden element and open hidden element
+   a.href = url;
+   a.download = filename;
+   a.click();
+}
+
+service.ts:
+-----------
+
+DownloadData(model):Observable<any>{
+    return new Observable(obs => {
+      var oReq = new XMLHttpRequest();
+      oReq.open("POST", 'http://localhost:8080/api/downlaod/excel', true);
+      oReq.setRequestHeader("content-type", "application/json");
+      oReq.responseType = "arraybuffer";
+  
+      oReq.onload = function (oEvent) {
+        var arrayBuffer = oReq.response;
+        var byteArray = new Uint8Array(arrayBuffer);
+        obs.next(byteArray);
+      };
+  
+      const body = JSON.stringify(model);
+      oReq.send(body);
+    });
+  }

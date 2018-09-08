@@ -1,0 +1,15 @@
+access key and value of object using *ngFor
+============================================
+
+Have Object.keys accessible in the template and use it in *ngFor.
+
+@Component({
+  selector: 'app-myview',
+  template: `<div *ngFor="let key of objectKeys(items)">{{key + ' : ' + items[key]}}</div>`
+})
+
+export class MyComponent {
+  objectKeys = Object.keys;
+  items = { keyOne: 'value 1', keyTwo: 'value 2', keyThree: 'value 3' };
+  constructor(){}
+}

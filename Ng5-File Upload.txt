@@ -1,0 +1,128 @@
+NG 5 - File Upload
+-------------------
+template.html
+------------
+ <p class="subhead">File Attachement</p>
+    <p>
+      <strong>Upload file types: .xls</strong>
+    </p>
+    <div class="form-group" name="uploadBtn">
+      <label class="btn btn-primary clear" aria-expanded="false">Upload
+        <input type="file" [formControl]="document" (change)="uploadFile($event)" class="form-control-file" aria-describedby="fileHelp">
+      </label>
+    </div>
+component.ts
+------------
+document = new FormControl()
+file;
+errorMessage='';
+uploadWarning;
+uploadSucessData;
+  uploadFile(event){
+    if (event && event.target && event.target.files && event.target.files.length > 0) {
+      this.file = event.target.files[0];
+      let fileName = this.file.name;
+      let parsedFileName = fileName.split(".");
+      let partsLength = parsedFileName.length;
+      let extension = parsedFileName[partsLength - 1];
+      let size = event.target.files[0].size;
+      let fileNameLength = parsedFileName[0].length;
+
+      if (!this.isValidFileSize(size)) {
+        //documentFormControl.setErrors({ addDocument_invalidFileSize: true })
+        console.log(" invalid File size exceeds")
+        this.errorMessage = "  invalid File size exceeds";
+        this.uploadWarning = true;
+      }
+      else if (!this.isValidExtension(extension)) {
+       // documentFormControl.setErrors({ addDocument_invalidFileExtn: true })
+        console.log(" invalid File Format")
+        this.errorMessage = " invalid File Format";
+        this.uploadWarning = true;
+      }
+      else {
+
+        this.service.uploadLocalChanges(this.file, this.file.name).subscribe( response => {
+          console.log(response)
+          if(response.status == true){
+            
+            this.uploadSucessData = response.data;
+            
+          }
+          else if(response.status == false){
+           
+            this.failureItem = true;
+           
+            this.uploadError = response.errors;
+          }
+        },
+          (error)=>{
+          console.log(error)
+          })
+      }
+    }
+    }
+
+  isValidExtension(extension) {
+    extension = extension.toLowerCase();
+    let result = false;
+    if (extension && allowedExtension.indexOf(extension) >= 0) {
+      result = true;
+    }
+    return result;
+  }
+
+  isValidFileSize(size) {
+    let result = false;
+    if (size && size <= 1000000) {
+      result = true;
+    }
+    return result;
+  }
+  commitLocalChanges(){
+    let commitData = { data : this.uploadSucessData}
+    this.service.commitLocalChanges(commitData).subscribe( data => {
+    console.log(data,"commit response")
+    },
+      (error)=> {
+      console.log(error)
+      })
+  }
+  cancelLocalGlossary(){
+   // this.uploadErrorMessage = [];
+   // this.uploadSucessData = [];
+    this.successItem = false;
+    this.failureItem =false;
+    this.uploadHide = false;
+  }
+  
+  
+  Service.ts
+  ---------
+  uploadLocalG(files: File, name: string): Observable<any> {
+    const formData: FormData = new FormData();
+    const headers = new Headers();
+
+    formData.append('file', files, name);
+    headers.append('Content-Type', 'multipart/form-data');
+    headers.append('Accept', 'application/json');
+
+    return this.http.post(`http://localhost:8080/apiupload`, formData)
+   //return this.http.post('http://localhost:8080/apiupload', formData, option)
+     .map(
+       res => {
+         const data = res;
+         return data;
+       })
+     .catch(error => Observable.throw(error))
+}
+  commitLocalchange(postData){
+    return this.http.post(`http://localhost:8080/apicommit`, postData)
+      .map(
+        res => {
+          const data = res;
+          return data;
+        })
+      .catch(error => Observable.throw(error))
+
+  }

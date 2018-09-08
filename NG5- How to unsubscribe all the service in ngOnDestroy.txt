@@ -1,0 +1,35 @@
+NG5- How to unsubscribe all the service in ngOnDestroy()
+--------------------------------------------------------
+
+To relase the component, need to unsubscribe in EveryComponent.component.ts
+----------------------------------------------------------------------------
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs/Subscription';
+
+export class ComponentClass implements OnInit, OnDestroy
+
+subscriptList: Array<Subscription> = [];
+
+ getServiceData(){
+ let subscription;
+    subscription = this.myService.getData(this.id).subscribe( data =>{
+      console.log(data)
+	  
+	  },
+	  (error) => 
+	  { console.log(error)
+	  }
+	 );
+	this.addToSubscriptList(subscription);
+}
+
+ addToSubscriptList(subscription) {
+    this.subscriptList.push(subscription);
+  }
+  
+  
+  ngOnDestroy() {
+    this.subscriptionList.forEach(subscription => {
+      subscription.unsubscribe();
+    })
+  }

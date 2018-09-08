@@ -1,0 +1,48 @@
+How to share component to multiple modules in Angular2
+===========================================================
+Hey Guys,
+ 
+    In every application some times there were some views which are repeated in the whole application, and for that we have two option:
+ 
+Either we repeat the same code everywhere in all the views where it’ll be used.
+Or we can create a common component and share it to every other view 
+ 
+If the functionality of the repeated view is same everywhere then repeating the code is not a best practice, In my opinion creating a common component and applying it to all different view/module is a great idea, it reduces the code redundancy and make our application neat and clean, also if something gets changed then you have to change it only in one component.
+ 
+But how can we achieve this in Angular 2 application?
+ 
+Since in Angular 2 we follow modular design pattern, which means we keep different views in different modules, but the question is how can we share a single component to different modules?
+ 
+We cannot share a component to different modules by just importing that component inside all the modules, because Angular 2 doesn’t allow us to import single component to different modules, if you try to do this then Angular will throw an error:
+    Type X(component) is part of the declarations of 2 modules
+ 
+ Type X(component) is part of the declarations of 2 modules
+ 
+ 
+So, for solving this problem we create a Shared Module instead of sharing a component, now we share this module in all other modules for this we use import statement and import the shared module in all other modules after this the component will gets automatically shared to all the modules.
+ 
+Below is the example of how to do it:
+ 
+SharedModule
+
+@NgModule({
+    imports: [
+        SomeModule
+     ],
+    declarations: [
+         SharedComponent
+    ],
+    exports: [
+        SharedComponent
+    ]
+})
+  
+export class SharedMoule {}
+app.module.ts 
+
+import { SharedModule } from './shared/shared.module;
+  
+@NgModule({
+    imports: [ SharedModule],
+     ...
+})

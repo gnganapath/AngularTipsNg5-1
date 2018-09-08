@@ -1,0 +1,14 @@
+Ng5-Lazy-loading-bug-cli-1.7.1 bug:
+-----------------------------------
+angular-cli1.7.1 have issue to laod lazy laoding in string
+
+
+
+{ path: 'user-panel', loadChildren: './user-panel/user-panel.module#UserPanelModule', },  -> will give error some time.
+
+
+to
+{ path: 'user-panel', loadChildren: () => UserPanelModule, },
+
+import {UserPanelModule} from '/path-of-module'   in routing.ts
+make the lazy loading into preloader module-> load the module as component level - module as component. 

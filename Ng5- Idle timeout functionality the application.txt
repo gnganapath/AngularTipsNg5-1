@@ -1,0 +1,77 @@
+Ng5- Idle timeout functionality the application
+-----------------------------------------------
+package.json
+---------------
+"@ng-idle/core": "2.0.0-beta.10",
+"@ng-idle/keepalive": "2.0.0-beta.10",
+
+add the do package and do npm install
+
+environment.ts  
+--------------
+ idleTimeout : 1440,//In second
+ waitTimeout: 60,//In second
+  
+ to provide timeout duration
+  
+ 
+app.module.ts
+-------------
+import { NgIdleKeepaliveModule } from '@ng-idle/keepalive'; // core dependncy
+import { HttpModule } from '@angular/http';                ///for angluar - bug dependencies
+
+
+import : [
+			NgIdleKeepaliveModule.forRoot(),
+			HttpModule
+		]
+
+app.comoponent.ts
+------------------
+import { ActivatedRoute, Router } from '@angular/router';
+import { Idle, DEFAULT_INTERRUPTSOURCES } from '@ng-idle/core';
+import { Keepalive } from '@ng-idle/keepalive';
+import { environment } from '../environments/environment';
+
+private idelTimeOut: boolean = false;
+  constructor(private router: Router, private route: ActivatedRoute, private idle: Idle, private keepalive: Keepalive){
+    this.isOnline = navigator.onLine;
+    //console.log(this.isOnline,"online or offline")
+    idle.setIdle(environment.idleTimeout);
+    //after X seconds of inactivity, the user will be timed out automatically.
+    idle.setTimeout(environment.waitTimeout);
+    // sets the default interrupts, in this case, things like clicks, scrolls, touches to the document
+    idle.setInterrupts(DEFAULT_INTERRUPTSOURCES);
+
+    //Idle + wait timeout pass hence logout automatically
+    idle.onTimeout.subscribe(() => {
+      console.log('call out logout');
+      this.logout();
+    });
+
+    //Idle time passed so, show the timeout modal
+    idle.onIdleStart.subscribe(() => {
+      this.idelTimeOut = true;
+    });
+
+    //Do we really need this keepalive?
+    keepalive.interval(15);
+
+    this.start();
+  }
+
+  start() {
+    //Start watching  idle.
+    console.log('idle started')
+    this.idle.watch();
+    this.idelTimeOut = false;
+  }
+
+  reset() {
+    this.start();
+    console.log('reset idle time');
+    //this.commonService.pingServer().subscribe();
+  }
+  logout(){
+    alert("Idle timeout called!");
+  }

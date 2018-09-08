@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> media test</title>
+        <meta charset="utf-8">
+        <meta name="keywords" content="test,css, css test">
+        <meta name="description" content="A CSS test and review.">
+        <meta name="author" content="brandon lind">
+        <link rel="stylesheet" media="screen" href="css/main.css">
+        <style>
+            .parent {
+			  transition: transform 1s ease-in-out 0s;
+			  transform-style: preserve-3d;
+			  width: 100px;
+			}
+			.parent:hover {
+			  transform: rotateY(180deg);
+			}
+			.back,
+			.front {
+			  width: 100px;
+			  height: 170px;
+			  position: absolute;
+			  top: 0;
+			  left: 0;
+			  backface-visibility: hidden;
+			}
+			.front {
+			  background-color: blue;
+			}
+			.back {
+			  background-color: red;
+			  transform: rotateY(180deg);
+			}
+        </style>
+    </head>
+    <body>
+        <div class="parent">
+            <div class="back">
+                back
+            </div>
+            <div class="front">
+                front
+            </div>
+        </div>
+    </body>
+</html>

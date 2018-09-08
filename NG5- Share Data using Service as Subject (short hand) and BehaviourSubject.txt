@@ -1,0 +1,80 @@
+NG5- Share Data using Service as Subject (short hand) and BehaviourSubject
+--------------------------------------------------------------------------
+Behaviour subject get's called before the receiver component comes to load.
+Subject based service used to load if, the receiver component is in DOM
+
+Common.service.ts
+------------------
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import {BehaviorSubject, Observable} from "rxjs/Rx";
+
+@Injectable()
+export class CommonService {
+
+  private type1 = new Subject<{flag:false}>();
+  private type2 = new Subject<{flag:false}>();
+  private type3: BehaviorSubject<{}> = new BehaviorSubject({flag:false});
+ 
+  // method:1
+  setValue1(message) {
+    this.type1.next(message);
+  }
+  getValue1(): Observable<any> {
+    return this.type1.asObservable();
+  }
+  // method:2
+  swapValue(val){
+    this.type2.next(val);
+  }
+  getcandidateQRow = this.type2.asObservable();
+  //method:3
+  setValue3(edit){
+    this.type3.next(edit);
+  }
+  getValue3(){
+    return this.type3;
+  }
+  
+  }
+  
+
+component1-sender.ts
+--------------------
+
+inject Service
+
+constructor( private service: CommonService){}
+
+this.service.setValue1(this.selectedTableRow);
+this.service.swapValue(this.selectedTableRow);
+this.service.setValue3(this.selectedTableRow);
+
+
+component2-receiver.ts
+----------------------
+
+inject Service
+
+constructor( private service: CommonService){
+
+this.service.getCQRowEdit().subscribe(
+      res => {
+        let temp;
+        temp = res;        
+        console.log(res,'Behaviour Subject');
+      });
+    this.addToSubscriptList(subscription);
+this.service.getCQRow().subscribe(
+      res => {
+        let temp;
+        temp = res;
+        console.log(res, 'subject');
+      });
+	  responed;
+service.getcandidateQRow.subscribe( res =>{
+
+      viewRow =>this.responed= viewRow;
+      console.log(this.responed,'code elimination subject');
+    });
+	}
